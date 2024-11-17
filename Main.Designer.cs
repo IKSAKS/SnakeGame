@@ -89,7 +89,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Main";
-            this.Text = "Form1";
+            this.Text = "Snake Game";
             this.TransparencyKey = System.Drawing.Color.Magenta;
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Main_KeyDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Main_MouseMove);

@@ -25,7 +25,6 @@ namespace SnakeGame
             this.Size = new Size(20, 20);
             this.BackColor = Color.Transparent;
             this.BackgroundImage = Properties.Resources.bg;
-            main.Controls.Add(this);
             this.SendToBack();
             if (head)
             {

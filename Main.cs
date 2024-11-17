@@ -27,9 +27,45 @@ namespace SnakeGame
             InitializeComponent();
             InitializeGame();
             InitializeText();
+            InitializeButtons();
             int borderWidth = this.Width - this.ClientSize.Width;
             int borderHeight = this.Height - this.ClientSize.Height;
             this.Size = new Size(500 + borderWidth, 500 + borderHeight);
+        }
+        private void InitializeButtons()
+        {
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.BackgroundImage = Properties.Resources.pauseButton;
+            pictureBox.Size = new Size(40, 40);
+            pictureBox.Left = (areaSize - 3) * 20;
+            pictureBox.Top = 0;
+            area.Controls.Add(pictureBox);
+            pictureBox.BringToFront();
+            pictureBox.Click += (sender, e) =>
+            {
+                gameTimer.Stop();
+                PictureBox pauseMenu = new PictureBox();
+                pauseMenu.BackColor = Color.FromArgb(155, 0, 0, 0);
+                pauseMenu.Size = new Size(500, 500);
+                pauseMenu.Left = 0;
+                pauseMenu.Top = 0;
+                area.Controls.Add(pauseMenu);
+                pauseMenu.BringToFront();
+                Button cont = new Button();
+                cont.Text = "Continue";
+                cont.Top = 150;
+                cont.Left = 170;
+                cont.Size = new Size(150, 50);
+                cont.BackColor = Color.FromArgb(6, 31, 54);
+                cont.ForeColor = Color.FromArgb(229, 197, 168);
+                pauseMenu.Controls.Add(cont);
+                cont.Click += (senderP, eP) =>
+                {
+                    gameTimer.Start();
+                    pauseMenu.Controls.Remove(cont);
+                    area.Controls.Remove(pauseMenu);
+                };
+            };
         }
         private void InitializeText()
         {
@@ -38,6 +74,7 @@ namespace SnakeGame
             scoreLabel.Font = new Font("Microsoft Sans Serif", 20, FontStyle.Regular);
             scoreLabel.AutoSize = true;
             scoreLabel.Text = "Score: 0";
+            scoreLabel.ForeColor = Color.FromArgb(6, 31, 54);
             area.Controls.Add(scoreLabel);
             scoreLabel.BringToFront();
             scoreLabel.BackColor = Color.Transparent;
@@ -58,7 +95,7 @@ namespace SnakeGame
         private void spawnFood()
         {
             Food food = new Food();
-            this.Controls.Add(food);
+            area.Controls.Add(food);
             food.BringToFront();
             foods.Add(food);
         }
@@ -71,7 +108,7 @@ namespace SnakeGame
                 GrowSnake();
                 score++;
                 foods.Remove(food);
-                this.Controls.Remove(food);
+                area.Controls.Remove(food);
                 food.Dispose();
                 spawnFood();
                 return;
@@ -113,6 +150,7 @@ namespace SnakeGame
         public void AddSnake(Snake snake)
         {
             snakes.Add(snake);
+            area.Controls.Add(snake);
         }
 
         private void Main_KeyDown(object sender, KeyEventArgs e)
