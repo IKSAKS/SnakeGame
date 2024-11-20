@@ -12,6 +12,8 @@ namespace SnakeGame
 {
     public partial class Main : Form
     {
+        int speed = 1;
+        int foodCount = 1;
         List<Food> foods = new List<Food>();
         List<Snake> snakes = new List<Snake>();
         Snake snakeHead;
@@ -20,6 +22,7 @@ namespace SnakeGame
         Label scoreLabel;
         private Boolean directionY = false; // up or down
         private Boolean directionMain = false; // up or left
+        private Boolean upgradeManuOpen = false;
         Keys keys = Keys.None;
         int areaSize = 25;
         public Main()
@@ -28,9 +31,9 @@ namespace SnakeGame
             InitializeGame();
             InitializeText();
             InitializeButtons();
-            int borderWidth = this.Width - this.ClientSize.Width;
-            int borderHeight = this.Height - this.ClientSize.Height;
-            this.Size = new Size(500 + borderWidth, 500 + borderHeight);
+            InitializeUpgrades();
+
+
         }
         private void InitializeButtons()
         {
@@ -43,29 +46,52 @@ namespace SnakeGame
             pictureBox.BringToFront();
             pictureBox.Click += (sender, e) =>
             {
-                gameTimer.Stop();
-                PictureBox pauseMenu = new PictureBox();
-                pauseMenu.BackColor = Color.FromArgb(155, 0, 0, 0);
-                pauseMenu.Size = new Size(500, 500);
-                pauseMenu.Left = 0;
-                pauseMenu.Top = 0;
-                area.Controls.Add(pauseMenu);
-                pauseMenu.BringToFront();
-                Button cont = new Button();
-                cont.Text = "Continue";
-                cont.Top = 150;
-                cont.Left = 170;
-                cont.Size = new Size(150, 50);
-                cont.BackColor = Color.FromArgb(6, 31, 54);
-                cont.ForeColor = Color.FromArgb(229, 197, 168);
-                pauseMenu.Controls.Add(cont);
-                cont.Click += (senderP, eP) =>
-                {
-                    gameTimer.Start();
-                    pauseMenu.Controls.Remove(cont);
-                    area.Controls.Remove(pauseMenu);
-                };
+                pauseMenu();
             };
+        }
+
+        private void pauseMenu()
+        {
+            gameTimer.Stop();
+            PictureBox pauseMenu = new PictureBox();
+            pauseMenu.BackColor = Color.FromArgb(155, 0, 0, 0);
+            pauseMenu.Size = new Size(500, 500);
+            pauseMenu.Left = 0;
+            pauseMenu.Top = 0;
+            area.Controls.Add(pauseMenu);
+            pauseMenu.BringToFront();
+            Button cont = new Button();
+            cont.Text = "Continue";
+            cont.Top = 150;
+            cont.Left = 170;
+            cont.Size = new Size(150, 50);
+            cont.BackColor = Color.FromArgb(6, 31, 54);
+            cont.ForeColor = Color.FromArgb(229, 197, 168);
+            cont.Font = new Font("Microsoft Sans Serif", 20, FontStyle.Regular);
+            pauseMenu.Controls.Add(cont);
+            cont.Click += (senderP, eP) =>
+            {
+                gameTimer.Start();
+                pauseMenu.Controls.Remove(cont);
+                area.Controls.Remove(pauseMenu);
+            };
+            Button quit = new Button();
+            quit.Text = "Quit";
+            quit.Top = 210;
+            quit.Left = 170;
+            quit.Size = new Size(150, 50);
+            quit.BackColor = Color.FromArgb(6, 31, 54);
+            quit.ForeColor = Color.FromArgb(229, 197, 168);
+            quit.Font = new Font("Microsoft Sans Serif", 20, FontStyle.Regular);
+            pauseMenu.Controls.Add(quit);
+            quit.Click += (senderP, eP) =>
+            {
+                this.Close();
+            };
+        }
+        private void InitializeUpgrades()
+        {
+            upgradeMenu.BackColor = Color.FromArgb(229, 197, 168);
         }
         private void InitializeText()
         {
@@ -104,7 +130,7 @@ namespace SnakeGame
         {
             foreach (Food food in foods)
             {
-                if (!snakeHead.Bounds.IntersectsWith(food.Bounds)) return;
+                if (!snakeHead.Bounds.IntersectsWith(food.Bounds)) continue;
                 GrowSnake();
                 score++;
                 foods.Remove(food);
@@ -155,6 +181,7 @@ namespace SnakeGame
 
         private void Main_KeyDown(object sender, KeyEventArgs e)
         {
+            //MessageBox.Show(e.KeyCode.ToString());
             switch (e.KeyCode)
             {
                 case Keys.Up:
@@ -224,13 +251,74 @@ namespace SnakeGame
         {
             gameTimer.Stop();
             gameOverLabel.Visible = true;
+            pauseMenu();
         }
 
         private void Main_MouseMove(object sender, MouseEventArgs e)
         {
-            label1.Text = e.Location.ToString();
+
         }
 
-       
+        private void upgradeLabel_Click(object sender, EventArgs e)
+        {
+            if (!upgradeManuOpen)
+            {
+                int borderWidth = this.Width - this.ClientSize.Width;
+                int borderHeight = this.Height - this.ClientSize.Height;
+                this.Size = new Size(500 + borderWidth, 600 + borderHeight);
+                upgradeManuOpen = true;
+            }
+            else
+            {
+                int borderWidth = this.Width - this.ClientSize.Width;
+                int borderHeight = this.Height - this.ClientSize.Height;
+                this.Size = new Size(500 + borderWidth, 500 + borderHeight);
+                upgradeManuOpen = false;
+            }
+        }
+
+        private void Main_Load(object sender, EventArgs e)
+        {
+            int borderWidth = this.Width - this.ClientSize.Width;
+            int borderHeight = this.Height - this.ClientSize.Height;
+            this.Size = new Size(500 + borderWidth, 500 + borderHeight);
+        }
+
+        private void upgradeSpeed_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            e.IsInputKey = true;
+        }
+
+        private void upgradeSpeed_Click(object sender, EventArgs e)
+        {
+            int cost = speed;
+            if (cost > score) return;
+            score -= cost;
+            UpdateScore();
+            speed++;
+            speedLabel.Text = $"Speed {speed}";
+            int newCost = speed;
+            upgradeSpeed.Text = $"Upgrade\nCost :{newCost}";
+            gameTimer.Interval -= gameTimer.Interval / 10;
+            this.Focus();
+        }
+        private void upgradeFood_Click(object sender, EventArgs e)
+        {
+            int cost = foodCount*2;
+            if (cost > score) return;
+            score -= cost;
+            UpdateScore();
+            foodCount++;
+            foodLabel.Text = $"Foods {foodCount}";
+            int newCost = foodCount*2;
+            upgradeFood.Text = $"Upgrade\nCost :{newCost}";
+            spawnFood();
+            this.Focus();
+        }
+
+        private void Main_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            MainMenu.Instance.Close();
+        }
     }
 }

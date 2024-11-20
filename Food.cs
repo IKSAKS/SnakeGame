@@ -17,8 +17,8 @@ namespace SnakeGame
             this.Size = new Size(20, 20);
             this.Left = r.Next(0, 24) * 20;
             this.Top = r.Next(0, 24) * 20;
-            this.BackColor = Color.Red;
-            
+            //this.BackColor = Color.Red;
+            this.BackgroundImage = Properties.Resources.apple;
         }
     }
 }
