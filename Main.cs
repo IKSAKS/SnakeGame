@@ -32,7 +32,7 @@ namespace SnakeGame
             InitializeText();
             InitializeButtons();
             InitializeUpgrades();
-
+            //gameTimer.Stop();
 
         }
         private void InitializeButtons()
